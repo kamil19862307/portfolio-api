@@ -15,6 +15,7 @@ class ProjectSeeder extends Seeder
      */
     public function run(): void
     {
+        // Ids only
         $technologyIds = Technology::pluck('id');
 
         $projects = Project::factory()
@@ -23,8 +24,10 @@ class ProjectSeeder extends Seeder
 
         foreach ($projects as $project) {
 
+            // Take some Ids for relating
             $randomIds = $technologyIds->random(rand(2, 4));
 
+            // Insert into pivot table
             $project->technologies()->attach($randomIds);
         }
     }
