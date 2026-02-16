@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string('name');
             $table->string('slug')->unique();
             $table->string('icon')->nullable();
-            $table->string('level')->nullable(); // ?? Senior, middle, junior
+            $table->string('level')->nullable(); // ?? Senior, Middle, Junior
 
             $table->timestamps();
         });
