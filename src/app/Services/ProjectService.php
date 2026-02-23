@@ -52,13 +52,10 @@ class ProjectService
             $project = $this->repository->findBySlug($slug);
 
             if (isset($attributes['title'])) {
-
                 $newSlug = Str::slug($attributes['title']);
 
                 if ($newSlug !== $project->slug && $this->repository->slugExists($newSlug)) {
-
                     throw new \Exception('Slug already exists.');
-
                 }
 
                 $attributes['slug'] = $newSlug;
@@ -67,7 +64,6 @@ class ProjectService
             $updated = $this->repository->updateBySlug($slug, $attributes);
 
             if (isset($attributes['technologies'])) {
-
                 $updated->technologies()->sync($attributes['technologies']);
             }
 
@@ -79,10 +75,8 @@ class ProjectService
     {
         $project = $this->repository->findBySlug($slug);
 
-        if ($project->is_locked) {
-
+        if ($project->isLocked()) {
             throw new \Exception('Project is locked.');
-
         }
 
         return $this->repository->deleteBySlug($slug);

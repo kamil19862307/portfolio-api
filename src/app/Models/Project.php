@@ -16,9 +16,18 @@ class Project extends Model
         'description',
         'slug',
         'image',
+        'position',
+        'is_locked',
+        'status',
+        'development_days',
         'github_url',
         'demo_url',
     ];
+
+    public function isLocked()
+    {
+        return $this->is_locked;
+    }
 
     public function technologies(): BelongsToMany
     {

@@ -18,6 +18,10 @@ return new class extends Migration
             $table->string('slug')->unique();
             $table->text('description');
             $table->string('image')->nullable();
+            $table->integer('position')->default(0); // Position on main page
+            $table->boolean('is_locked')->default(false);
+            $table->string('status')->default('active');
+            $table->string('development_days')->nullable();
             $table->string('github_url')->nullable();
             $table->string('demo_url')->nullable();
 
