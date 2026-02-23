@@ -21,6 +21,25 @@ class EloquentProjectRepository implements ProjectRepositoryInterface
             ->firstOrFail();
     }
 
+    public function create(array $attributes)
+    {
+        return Project::create($attributes);
+    }
+
+    public function updateBySlug(string $slug, array $attributes): Project
+    {
+        $project = $this->findBySlug($slug);
+
+        $project->update($attributes);
+
+        return $project;
+    }
+
+    public function slugExists(string $slug): bool
+    {
+        return Project::where('slug', $slug)->exists();
+    }
+
     public function deleteBySlug(string $slug): void
     {
         $project = $this->findBySlug($slug);

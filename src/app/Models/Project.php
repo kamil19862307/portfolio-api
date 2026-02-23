@@ -11,6 +11,15 @@ class Project extends Model
     /** @use HasFactory<\Database\Factories\ProjectFactory> */
     use HasFactory;
 
+    protected $fillable = [
+        'title',
+        'description',
+        'slug',
+        'image',
+        'github_url',
+        'demo_url',
+    ];
+
     public function technologies(): BelongsToMany
     {
         return $this->belongsToMany(Technology::class);

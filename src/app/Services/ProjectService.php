@@ -3,6 +3,8 @@
 namespace App\Services;
 
 use App\Repositories\ProjectRepositoryInterface;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 
 class ProjectService
 {
@@ -21,8 +23,68 @@ class ProjectService
         return $this->repository->findBySlug($slug);
     }
 
+    public function store(array $attributes)
+    {
+        return DB::transaction(function () use ($attributes) {
+
+            $slug = Str::slug($attributes['title']);
+
+            if ($this->repository->slugExists($slug)) {
+                throw new \Exception('Slug already exists.');
+            }
+
+            $attributes['slug'] = $slug;
+
+            $project = $this->repository->create($attributes);
+
+            if (!empty($attributes['technologies'])) {
+                $project->technologies()->sync($attributes['technologies']);
+            }
+
+            return $project->load('technologies');
+        });
+    }
+
+    public function update(string $slug, array $attributes)
+    {
+        return DB::transaction(function () use ($slug, $attributes) {
+
+            $project = $this->repository->findBySlug($slug);
+
+            if (isset($attributes['title'])) {
+
+                $newSlug = Str::slug($attributes['title']);
+
+                if ($newSlug !== $project->slug && $this->repository->slugExists($newSlug)) {
+
+                    throw new \Exception('Slug already exists.');
+
+                }
+
+                $attributes['slug'] = $newSlug;
+            }
+
+            $updated = $this->repository->updateBySlug($slug, $attributes);
+
+            if (isset($attributes['technologies'])) {
+
+                $updated->technologies()->sync($attributes['technologies']);
+            }
+
+            return $updated->load('technologies');
+        });
+    }
+
     public function delete(string $slug)
     {
+        $project = $this->repository->findBySlug($slug);
+
+        if ($project->is_locked) {
+
+            throw new \Exception('Project is locked.');
+
+        }
+
         return $this->repository->deleteBySlug($slug);
     }
 }
