@@ -21,7 +21,7 @@ return new class extends Migration
             $table->integer('position')->default(0); // Position on main page
             $table->boolean('is_locked')->default(false);
             $table->string('status')->default('active');
-            $table->string('development_days')->nullable();
+            $table->string('development_days')->nullable(); // How many days spend to develop an app
             $table->string('github_url')->nullable();
             $table->string('demo_url')->nullable();
 

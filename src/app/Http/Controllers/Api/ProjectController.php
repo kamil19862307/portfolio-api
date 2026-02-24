@@ -13,9 +13,9 @@ class ProjectController extends Controller
     )
     {}
 
-    public function index()
+    public function index(Request $request)
     {
-        return response()->json($this->service->list());
+        return response()->json($this->service->list($request->only('technologies')));
     }
 
     public function show(string $slug)

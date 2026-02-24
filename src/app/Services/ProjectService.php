@@ -13,9 +13,9 @@ class ProjectService
     )
     {}
 
-    public function list()
+    public function list(array $filters = [])
     {
-        return $this->repository->getAll();
+        return $this->repository->getAll($filters);
     }
 
     public function show(string $slug)

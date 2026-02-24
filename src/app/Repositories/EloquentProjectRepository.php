@@ -9,9 +9,20 @@ use Illuminate\Routing\Redirector;
 
 class EloquentProjectRepository implements ProjectRepositoryInterface
 {
-    public function getAll(): Collection
+    public function getAll(array $filters = []): Collection
     {
-        return Project::with('technologies')->get();
+        $query = Project::with('technologies');
+
+        if (!empty($filters['technologies'])) {
+
+            $technologies = explode('-', $filters['technologies']);
+
+            $query->whereHas('technologies', function ($q) use ($technologies) {
+                $q->whereIn('slug', $technologies);
+            });
+        }
+
+        return $query->get();
     }
 
     public function findBySlug(string $slug): Project

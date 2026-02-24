@@ -4,7 +4,7 @@ namespace App\Repositories;
 
 interface ProjectRepositoryInterface
 {
-    public function getAll();
+    public function getAll(array $filters = []);
 
     public function findBySlug(string $slug);
 
