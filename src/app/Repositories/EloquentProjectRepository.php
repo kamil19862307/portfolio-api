@@ -2,27 +2,18 @@
 
 namespace App\Repositories;
 
+use App\Filters\TechnologyFilter;
 use App\Models\Project;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Routing\Redirector;
 
 class EloquentProjectRepository implements ProjectRepositoryInterface
 {
-    public function getAll(array $filters = []): Collection
+    public function query(): Builder
     {
-        $query = Project::with('technologies');
-
-        if (!empty($filters['technologies'])) {
-
-            $technologies = explode('-', $filters['technologies']);
-
-            $query->whereHas('technologies', function ($q) use ($technologies) {
-                $q->whereIn('slug', $technologies);
-            });
-        }
-
-        return $query->get();
+        return Project::query();
     }
 
     public function findBySlug(string $slug): Project

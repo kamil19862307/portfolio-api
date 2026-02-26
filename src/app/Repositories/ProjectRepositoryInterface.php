@@ -2,9 +2,11 @@
 
 namespace App\Repositories;
 
+use Illuminate\Database\Eloquent\Builder;
+
 interface ProjectRepositoryInterface
 {
-    public function getAll(array $filters = []);
+    public function query(): Builder;
 
     public function findBySlug(string $slug);
 

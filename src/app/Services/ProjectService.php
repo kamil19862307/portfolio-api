@@ -2,7 +2,10 @@
 
 namespace App\Services;
 
+use App\Filters\TechnologyFilter;
+use App\Models\Project;
 use App\Repositories\ProjectRepositoryInterface;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
@@ -13,9 +16,17 @@ class ProjectService
     )
     {}
 
-    public function list(array $filters = [])
+    public function list(array $filters = []): Collection
     {
-        return $this->repository->getAll($filters);
+        $query = $this->repository
+            ->query()
+            ->with('technologies');
+
+        $filter = new TechnologyFilter();
+
+        $query = $filter->apply($query, $filters);
+
+        return $query->get();
     }
 
     public function show(string $slug)
