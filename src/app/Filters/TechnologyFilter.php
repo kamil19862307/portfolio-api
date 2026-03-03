@@ -16,7 +16,7 @@ class TechnologyFilter
             $technologies = explode('-', $filters['technologies']);
             $technologies = array_filter($technologies);
             $technologies = array_unique($technologies);
-            $technologies = array_values($technologies);
+            $technologies = array_values($technologies); // ['php', 'laravel', 'docker']
 
             if (!empty($technologies)) {
                 $query->whereHas('technologies', function ($query) use ($technologies) {

@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Support\Facades\Storage;
 
 class Project extends Model
 {
@@ -23,6 +24,13 @@ class Project extends Model
         'github_url',
         'demo_url',
     ];
+
+    public function getImageUrlAttribute(): string
+    {
+        return Storage::disk('public')->url($this->image);
+    }
+
+    protected $appends = ['image_url'];
 
     public function isLocked()
     {

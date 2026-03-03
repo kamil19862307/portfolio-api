@@ -3,9 +3,11 @@
 namespace App\Services;
 
 use App\Filters\TechnologyFilter;
+use App\Http\Requests\ProjectStoreRequest;
 use App\Models\Project;
 use App\Repositories\ProjectRepositoryInterface;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
@@ -34,22 +36,26 @@ class ProjectService
         return $this->repository->findBySlug($slug);
     }
 
-    public function store(array $attributes)
+    public function store(array $data)
     {
-        return DB::transaction(function () use ($attributes) {
+        return DB::transaction(function () use ($data) {
 
-            $slug = Str::slug($attributes['title']);
+            $slug = Str::slug($data['title']);
 
             if ($this->repository->slugExists($slug)) {
                 throw new \Exception('Slug already exists.');
             }
 
-            $attributes['slug'] = $slug;
+            $data['slug'] = $slug;
 
-            $project = $this->repository->create($attributes);
+            if (isset($data['image'])) {
+                $data['image'] = $data['image']->store('projects', 'public');
+            }
 
-            if (!empty($attributes['technologies'])) {
-                $project->technologies()->sync($attributes['technologies']);
+            $project = $this->repository->create($data);
+
+            if (!empty($data['technologies'])) {
+                $project->technologies()->sync($data['technologies']);
             }
 
             return $project->load('technologies');

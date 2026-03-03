@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\ProjectStoreRequest;
 use App\Services\ProjectService;
 use Illuminate\Http\Request;
 
@@ -23,9 +24,9 @@ class ProjectController extends Controller
         return response()->json($this->service->show($slug));
     }
 
-    public function store (Request $request)
+    public function store (ProjectStoreRequest $request)
     {
-        return response()->json($this->service->store($request->all()));
+        return response()->json($this->service->store($request->validated()));
     }
 
     public function update(string $slug, Request $request)
