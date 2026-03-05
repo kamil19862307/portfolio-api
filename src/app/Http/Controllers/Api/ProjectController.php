@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\DTOs\ProjectStoreDTO;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ProjectStoreRequest;
 use App\Services\ProjectService;
@@ -26,7 +27,9 @@ class ProjectController extends Controller
 
     public function store (ProjectStoreRequest $request)
     {
-        return response()->json($this->service->store($request->validated()));
+        $dto = new ProjectStoreDTO(...$request->validated());
+
+        return response()->json($this->service->store($dto));
     }
 
     public function update(string $slug, Request $request)

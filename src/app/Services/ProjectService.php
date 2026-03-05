@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\DTOs\ProjectStoreDTO;
 use App\Filters\TechnologyFilter;
 use App\Http\Requests\ProjectStoreRequest;
 use App\Models\Project;
@@ -36,26 +37,34 @@ class ProjectService
         return $this->repository->findBySlug($slug);
     }
 
-    public function store(array $data)
+    public function store(ProjectStoreDTO $dto)
     {
-        return DB::transaction(function () use ($data) {
+        return DB::transaction(function () use ($dto) {
 
-            $slug = Str::slug($data['title']);
+            $slug = Str::slug($dto->title);
 
             if ($this->repository->slugExists($slug)) {
                 throw new \Exception('Slug already exists.');
             }
 
-            $data['slug'] = $slug;
+            // Добавить проверку на наличие картинки?
+            $imagePath = $dto->image->store('projects', 'public');
 
-            if (isset($data['image'])) {
-                $data['image'] = $data['image']->store('projects', 'public');
-            }
+            $project = $this->repository->create([
+                'title' => $dto->title,
+                'slug' => $slug,
+                'description' => $dto->description,
+                'image' => $imagePath,
+                'position' => $dto->position,
+                'is_locked' => $dto->is_locked,
+                'status' => $dto->status,
+                'development_days' => $dto->development_days,
+                'github_url' => $dto->github_url,
+                'demo_url' => $dto->demo_url,
+            ]);
 
-            $project = $this->repository->create($data);
-
-            if (!empty($data['technologies'])) {
-                $project->technologies()->sync($data['technologies']);
+            if ($dto->technologies) {
+                $project->technologies()->sync($dto->technologies);
             }
 
             return $project->load('technologies');
