@@ -110,6 +110,13 @@ class ProjectService
             throw new \Exception('Project is locked.');
         }
 
-        return $this->repository->deleteBySlug($slug);
+        return DB::transaction(function () use ($project) {
+
+            if ($project->image) {
+                Storage::disk('public')->delete($project->image);
+            }
+
+            return $this->repository->deleteBySlug($project->slug);
+        });
     }
 }
