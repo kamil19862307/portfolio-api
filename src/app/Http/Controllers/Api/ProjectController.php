@@ -3,8 +3,10 @@
 namespace App\Http\Controllers\Api;
 
 use App\DTOs\ProjectStoreDTO;
+use App\DTOs\ProjectUpdateDTO;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ProjectStoreRequest;
+use App\Http\Requests\ProjectUpdateRequest;
 use App\Services\ProjectService;
 use Illuminate\Http\Request;
 
@@ -32,9 +34,11 @@ class ProjectController extends Controller
         return response()->json($this->service->store($dto));
     }
 
-    public function update(string $slug, Request $request)
+    public function update(string $slug, ProjectUpdateRequest $request)
     {
-        return response()->json($this->service->update($slug, $request->all()));
+        $dto = new ProjectUpdateDTO(...$request->validated());
+
+        return response()->json($this->service->update($slug, $dto));
     }
 
     public function delete(string $slug)

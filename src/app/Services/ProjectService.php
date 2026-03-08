@@ -3,13 +3,16 @@
 namespace App\Services;
 
 use App\DTOs\ProjectStoreDTO;
+use App\DTOs\ProjectUpdateDTO;
 use App\Filters\TechnologyFilter;
 use App\Http\Requests\ProjectStoreRequest;
+use App\Http\Requests\ProjectUpdateRequest;
 use App\Models\Project;
 use App\Repositories\ProjectRepositoryInterface;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
 class ProjectService
@@ -71,29 +74,64 @@ class ProjectService
         });
     }
 
-    public function update(string $slug, array $attributes)
+    public function update(string $slug, ProjectUpdateDTO $dto)
     {
-        return DB::transaction(function () use ($slug, $attributes) {
+        return DB::transaction(function () use ($slug, $dto) {
 
             $project = $this->repository->findBySlug($slug);
 
-            if (isset($attributes['title'])) {
-                $newSlug = Str::slug($attributes['title']);
+            $data = [];
 
-                if ($newSlug !== $project->slug && $this->repository->slugExists($newSlug)) {
-                    throw new \Exception('Slug already exists.');
+            if ($dto->title) {
+                $data['title'] = $dto->title;
+                $data['slug'] = Str::slug($dto->title);
+            }
+
+            if ($dto->description) {
+                $data['description'] = $dto->description;
+            }
+
+            if ($dto->position !== null) {
+                $data['position'] = $dto->position;
+            }
+
+            if ($dto->status) {
+                $data['status'] = $dto->status;
+            }
+
+            if ($dto->development_days) {
+                $data['development_days'] = $dto->development_days;
+            }
+
+            if ($dto->github_url) {
+                $data['github_url'] = $dto->github_url;
+            }
+
+            if ($dto->demo_url) {
+                $data['demo_url'] = $dto->demo_url;
+            }
+
+            if ($dto->is_locked !== null) {
+                $data['is_locked'] = $dto->is_locked;
+            }
+
+            if ($dto->image){
+
+                if ($project->image){
+                    // Delete old image
+                    Storage::disk('public')->delete($project->image);
                 }
 
-                $attributes['slug'] = $newSlug;
+                $data['image'] = $dto->image->store('projects', 'public');
             }
 
-            $updated = $this->repository->updateBySlug($slug, $attributes);
+            $project->update($data);
 
-            if (isset($attributes['technologies'])) {
-                $updated->technologies()->sync($attributes['technologies']);
+            if ($dto->technologies) {
+                $project->technologies()->sync($dto->technologies);
             }
 
-            return $updated->load('technologies');
+            return $project->load('technologies');
         });
     }
 
