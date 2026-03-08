@@ -80,40 +80,7 @@ class ProjectService
 
             $project = $this->repository->findBySlug($slug);
 
-            $data = [];
-
-            if ($dto->title) {
-                $data['title'] = $dto->title;
-                $data['slug'] = Str::slug($dto->title);
-            }
-
-            if ($dto->description) {
-                $data['description'] = $dto->description;
-            }
-
-            if ($dto->position !== null) {
-                $data['position'] = $dto->position;
-            }
-
-            if ($dto->status) {
-                $data['status'] = $dto->status;
-            }
-
-            if ($dto->development_days) {
-                $data['development_days'] = $dto->development_days;
-            }
-
-            if ($dto->github_url) {
-                $data['github_url'] = $dto->github_url;
-            }
-
-            if ($dto->demo_url) {
-                $data['demo_url'] = $dto->demo_url;
-            }
-
-            if ($dto->is_locked !== null) {
-                $data['is_locked'] = $dto->is_locked;
-            }
+            $data = $dto->toArray();
 
             if ($dto->image){
 
