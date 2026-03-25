@@ -23,12 +23,6 @@ class ProjectController extends Controller
         return ProjectResource::collection($this->service->list($request->only('technologies')));
     }
 
-//    Тебе приходилось собственный декоратор писать?
-//    Да
-//    Давай, допустим, у нас есть какая-то функция, такая капризная, она иногда падает, допустим в сеть какуюто ходит.
-//    И мы хотим сделать ей retry. Можем начать с простого, без аргументов, просто чтоб как минимум,
-//    три раза наша функция вызвалась.
-
     public function show(string $slug)
     {
         return new ProjectResource($this->service->show($slug));
